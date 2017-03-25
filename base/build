@@ -85,6 +85,11 @@ with acbuild.ACBuild(f'archlinux-{today}.aci', initial_aci=rootfs, debug=True) a
     # TODO: does this need help with generating entropy?
     # https://wiki.archlinux.org/index.php/Pacman/Package_signing
     aci.run('pacman-key', '--init')
+    # normally this gets run whenever archlinux-keyring is installed/upgraded
+    # however, archlinux-keyring installs before pacman (and pacman-key) are installed
+    # so, on an empty system that was pacstrapped with -G (do not share host keyring),
+    # we also have to manually populate the keyring the first time around
+    aci.run('pacman-key', '--populate', 'archlinux')
     # pacstrap was run on the host, so this log contains paths from the host filesystem
     # hence we want to remove it
     aci.run('rm', '/var/log/pacman.log')
