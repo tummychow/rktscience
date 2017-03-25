@@ -37,11 +37,15 @@ class ACBuild:
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        if exc_type is None:
-            self.write()
-        # TODO: what if end fails while we're in the middle
-        # of another exception?
-        self.end()
+        try:
+            if exc_type is None:
+                self.write()
+        finally:
+            # TODO: what if end fails while we're in the middle
+            # of another exception?
+            self.end()
+        # if we did not raise any exceptions, then resume
+        # handling of the existing exception (if any)
         return False
 
     def _acinvoke(self, *args):
