@@ -14,7 +14,7 @@ rktscience depends on the following:
 
 Note that xephyr/pulse are only needed for containers with desktop applications; CLI-only stuff can run without them. Also, as an Arch user, I track upstream versions pretty aggressively, so try the newest released versions of the above if you run into problems.
 
-Once you have those things, clone the repo and build the base image with `./base` (requires root, as all the scripts in the repo do). You'll get an ACI that you can `rkt run`. More to come.
+Once you have those things, clone the repo and build the base image with `./base/build` (requires root, as all the scripts in the repo do). You'll get an ACI that you can `rkt run`. More to come.
 
 ## Why not flatpak?
 
