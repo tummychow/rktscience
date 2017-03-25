@@ -26,42 +26,34 @@ os.environ['LC_ALL'] = LOCALE
 # own process
 locale.setlocale(locale.LC_ALL, '')
 
-today = datetime.datetime.utcnow().date().isoformat()
+today = datetime.datetime.utcnow().date().strftime('%Y%m%d')
 rootfs = pathlib.Path(f'archlinux-{today}')
 rootfs.mkdir()
 rootfs.chmod(0o755)
 rootfs = rootfs.resolve()
 
-# list target groups
-packages = set(subprocess.run(
-    ['pacman', '-Sgq', 'base', 'base-devel'],
-    check=True,
-    stdout=subprocess.PIPE,
-    encoding='ascii',
-).stdout.split())
-# remove packages that a container doesn't need
-packages.difference_update({
-    'cryptsetup',
-    'device-mapper',
-    'dhcpcd',
-    'iproute2',
-    'jfsutils',
-    'linux',
-    'lvm2',
-    'man-db',
-    'man-pages',
-    'mdadm',
-    'nano',
-    'netctl',
-    'pciutils',
-    'pcmciautils',
-    'reiserfsprogs',
-    's-nail',
-    'systemd-sysvcompat',
-    'usbutils',
-    'vi',
-    'xfsprogs',
-})
+packages = {
+    'bash',
+    'bzip2',
+    'coreutils',
+    'diffutils',
+    'file',
+    'filesystem',
+    'findutils',
+    'gawk',
+    'grep',
+    'gzip',
+    'iputils',
+    'less',
+    'pacman',
+    'procps-ng',
+    'psmisc',
+    'sed',
+    'shadow',
+    'tar',
+    'util-linux',
+    'which',
+}
 
 # set standard conf options
 # use an https mirror, instead of the mirrorlist
@@ -93,24 +85,29 @@ with tempfile.NamedTemporaryFile() as tmpconf:
         check=True
     )
 
-with acbuild.ACBuild(f'archlinux-{today}.aci', initial_aci=rootfs, debug=True) as aci:
-    aci.set_name('archlinux')
-    aci.label_add('version', today)
-    # although we pacstrapped in C, the container should have a UTF-8 locale at runtime
-    # due to the lack of C.UTF-8 on arch, en_US.UTF-8 is the next-best option
-    with tempfile.NamedTemporaryFile() as localegen:
-        localegen.write(b'en_US.UTF-8 UTF-8\n')
-        localegen.flush()
-        aci.copy(localegen.name, '/etc/locale.gen')
-    aci.run('locale-gen')
-    # UTC timezone
-    aci.run('ln', '-sf', '/usr/share/zoneinfo/UTC', '/etc/localtime')
-    # TODO: does this need help with generating entropy?
-    # https://wiki.archlinux.org/index.php/Pacman/Package_signing
-    aci.run('pacman-key', '--init')
-    # pacstrap was run on the host, so this log contains paths from the host filesystem
-    # hence we want to remove it
-    aci.run('rm', '/var/log/pacman.log')
+    with acbuild.ACBuild(f'archlinux-{today}.aci', initial_aci=rootfs, debug=True) as aci:
+        aci.set_name('archlinux')
+        aci.label_add('version', today)
+        # the container also needs access to pacman.conf
+        aci.copy(tmpconf.name, '/etc/pacman.conf')
+        # although we pacstrapped in C, the container should have a UTF-8 locale at runtime
+        # due to the lack of C.UTF-8 on arch, en_US.UTF-8 is the next-best option
+        with tempfile.NamedTemporaryFile() as localegen:
+            localegen.write(b'en_US.UTF-8 UTF-8\n')
+            localegen.flush()
+            aci.copy(localegen.name, '/etc/locale.gen')
+        # note that this requires sed
+        aci.run('locale-gen')
+        # UTC timezone
+        aci.run('ln', '-sf', '/usr/share/zoneinfo/UTC', '/etc/localtime')
+        # TODO: does this need help with generating entropy?
+        # https://wiki.archlinux.org/index.php/Pacman/Package_signing
+        aci.run('pacman-key', '--init')
+        # pacstrap was run on the host, so this log contains paths from the host filesystem
+        # hence we want to remove it
+        aci.run('rm', '/var/log/pacman.log')
+        # lock root
+        aci.run('passwd', '-l', 'root')
 
 # alternative approaches:
 #   https://github.com/finalduty/docker-archlinux (run pacstrap like we're doing)
