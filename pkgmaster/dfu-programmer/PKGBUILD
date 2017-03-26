@@ -1,0 +1,27 @@
+# Contributor: Eduardo Martins Lopes < edumlopes at gmail dot com >
+# Contributor: Poco <poco@atelo.org> (Patched 0.5.4 with atmega16u2 support)
+# Maintainer: Eric Anderson <ejona86@gmail.com>
+
+pkgname=dfu-programmer
+pkgver=0.7.2
+pkgrel=1
+pkgdesc='Programmer for Atmel chips with a USB bootloader'
+arch=('i686' 'x86_64')
+url='https://dfu-programmer.github.io'
+license=('GPL')
+depends=('libusbx')
+source=('https://github.com/dfu-programmer/dfu-programmer/archive/b1a75c0fce7cf2b717178a94729cd310a99c1d92.tar.gz')
+sha256sums=('5a6fb927200d5f8e94f501ff5a9bf79570592ae077d2e1917af98f3ecefbfc28')
+
+build() {
+  cd "${pkgname}-b1a75c0fce7cf2b717178a94729cd310a99c1d92"
+  ./bootstrap.sh
+  # TODO: install autocompletion
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "${pkgname}-b1a75c0fce7cf2b717178a94729cd310a99c1d92"
+  make DESTDIR="${pkgdir}" install
+}
