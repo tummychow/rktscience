@@ -8,6 +8,7 @@ rktscience depends on the following:
 
 - [python 3](https://www.python.org)
 - [rkt](https://coreos.com/rkt)
+  - you may want to [`systemctl enable rkt-gc.timer`](https://github.com/coreos/rkt/blob/master/dist/init/systemd/rkt-gc.timer) to automatically [garbage-collect](https://coreos.com/rkt/docs/latest/subcommands/gc.html) old pods
 - [acbuild](https://github.com/containers/build)
 - [xephyr](https://cgit.freedesktop.org/xorg/xserver/tree/hw/kdrive/ephyr/README)
 - [pulseaudio](https://www.freedesktop.org/wiki/Software/PulseAudio)
