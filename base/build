@@ -95,8 +95,3 @@ with acbuild.ACBuild(f'archlinux-{today}.aci', initial_aci=rootfs, debug=True) a
     aci.run('rm', '/var/log/pacman.log')
     # lock root
     aci.run('passwd', '-l', 'root')
-
-# alternative approaches:
-#   https://github.com/finalduty/docker-archlinux (run pacstrap like we're doing)
-#   https://github.com/greyltc/docker-archlinux (bootstrap pacman outside an arch system)
-#   https://github.com/archimg/archlinux (use the rootfs provided by arch)

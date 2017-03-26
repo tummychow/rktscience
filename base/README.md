@@ -1,0 +1,17 @@
+# base
+
+base is the root ACI for my other Arch ACIs. Note that acbuild does not yet support [local dependencies](https://github.com/containers/build/issues/227), so when you base one ACI on another, you're actually just extracting the parent ACI's entire rootfs into the child. There's no deduplication or inter-ACI referencing going on there.
+
+If this is an absolute deal-breaker to you, you might be interested in hosting your own [acserver](https://github.com/appc/acserver) to provide local appc discovery for your own images. Then your child images can refer to your acserver instance for their dependencies. I plan to try this sometime in the future, but right now the base image is about 140MB, which is small enough that I don't care about duplicating it.
+
+## The Approach
+
+In the wild, I have seen three main approaches to building an Arch rootfs container:
+
+- run pacstrap to build a rootfs, tar it up and shovel it into the appropriate container format. This probably originated with docker's [mkimage-arch](https://github.com/docker/docker/blob/master/contrib/mkimage-arch.sh) script.
+  - A good example of this is [finalduty/archlinux](https://hub.docker.com/r/finalduty/archlinux/), which comes from [this git repo](https://github.com/finalduty/docker-archlinux). [pritunl/archlinux](https://hub.docker.com/r/pritunl/archlinux/) is similar (and, bonus, comes with an [archive](http://mirror.pritunl.com/archlinux/) of all official x86_64 packages since 2015!).
+  - Another interesting example is the set of images by [ArchLinuxJP](https://hub.docker.com/u/archlinuxjp/). From what I can tell, their approach is two circularly dependent containers, [docker-arch](https://github.com/ArchLinuxJP/docker-arch/tree/master/dockerfile/docker-arch) (a bootstrapped Arch system and a script for building a rootfs from it) and [archlinux](https://github.com/ArchLinuxJP/docker-arch/tree/master/dockerfile/archlinux) (an Arch system bootstrapped by the aforementioned script). The nice thing about this approach is that the host system doesn't need to have `arch-install-scripts` installed; you can just run _another_ container that already has pacstrap in it. As with all circular dependencies, though, someone probably had to bootstrap the cycle somewhere.
+- I actually didn't know this before doing this research, but it turns out that Arch hosts [bootstrap-ready rootfs tarballs](https://archive.archlinux.org/iso/2017.03.01/) on its archival server. You could download that rootfs, untar it, and start a container directly off of it. You'd only have a few more bookkeeping tasks left to achieve a runnable container, which is exactly how [base/archlinux](https://hub.docker.com/r/base/archlinux/) works ([repo](https://github.com/archimg/archlinux)).
+- In a particularly unusual approach, [greyltc/archlinux](https://hub.docker.com/r/greyltc/archlinux/) uses a [foreign bootstrapping script](https://github.com/greyltc/arch-bootstrap) to build pacman on a non-Arch distribution. Given a skeletal nothing-but-pacman rootfs, you can [install the rest of Arch](https://github.com/greyltc/docker-archlinux/blob/master/setup-arch-docker-container.sh) into the container environment.
+
+Prior art for bootstrapping Arch Linux with acbuild is thin on the ground. My approach is derived from the original mkimage-arch. I had my own version of mkimage-arch a few years ago, which I've now ported to acbuild for this ACI.
