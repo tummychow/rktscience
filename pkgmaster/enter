@@ -1,0 +1,49 @@
+#!/usr/bin/bash
+
+set -e
+
+# the default PATH used by rkt/nspawn does not include
+# /usr/bin/{core,site,vendor}_perl
+# however, we do not execute a login shell, so we never
+# source /etc/profile.d/perlbin.sh to add those PATH
+# entries
+# since some PKGBUILDs depend on them, we manually add
+# the PATH entries back in
+export PATH=$PATH:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
+
+# give the builder user the same IDs as the host user
+groupadd -f -g $GID builder
+useradd -u $UID -g builder builder
+
+# create the output directories
+for DIR in /build/{dest,other,build} ; do
+  mkdir -p "${DIR}"
+  chown builder:builder "${DIR}"
+done
+
+# create databases if they don't exist,
+# otherwise pacman -Sy will fail
+for DB in /var/lib/pkgmaster/user.{db,files}.tar.xz ; do
+  if [[ ! -r "${DB}" ]] ; then
+    touch "${DB}"
+    chown builder:builder "${DB}"
+  fi
+done
+
+# makepkg makes extensive use of process substitution, which bash
+# implements via /dev/fd access
+# appc does not mandate this symlink so we must make it ourselves
+# https://github.com/appc/spec/issues/641
+ln -sf /proc/self/fd /dev/fd
+
+# build it!
+pacman -Syu --noconfirm
+runuser -u builder -- makepkg -cs --noconfirm
+
+# TODO: repo-remove older/other versions of packages that were added?
+for PKG in "${PKGDEST}"/*.tar.xz ; do
+  # the database file refers to the path to the package, so we can't
+  # just repo-add it without moving it to the mounted volume
+  mv "${PKG}" /var/lib/pkgmaster
+  repo-add /var/lib/pkgmaster/user.db.tar.xz /var/lib/pkgmaster/"${PKG##*/}"
+done

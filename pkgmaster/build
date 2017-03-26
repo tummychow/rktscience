@@ -1,0 +1,50 @@
+#!/usr/bin/python3
+
+import datetime
+import os.path
+import sys
+import tempfile
+
+DIR = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.dirname(DIR))
+import acbuild
+
+today = datetime.datetime.utcnow().date().strftime('%Y%m%d')
+
+with acbuild.ACBuild(f'pkgmaster-{today}.aci', initial_aci=os.path.realpath(sys.argv[1]), debug=True) as aci:
+    aci.set_name('pkgmaster')
+    aci.label_add('version', today)
+    # install basic build tooling
+    aci.run('pacman', '-Syu', '--noconfirm', '--needed', 'base-devel')
+    # add the user repo to pacman.conf
+    aci.copy(os.path.join(DIR, 'pacman.conf'), '/etc/pacman.conf')
+    # use sha256 checksumming
+    aci.run('sed', '-e', '/^INTEGRITY_CHECK=/s/(.*)/(sha256)/', '-i', '/etc/makepkg.conf')
+    # makepkg cannot run as root, so we need to make a user for it
+    # but that user needs to run pacman for makepkg -s, so we give them
+    # sudo for it
+    # the user will be created at runtime, using the uid/gid of
+    # the host user
+    with tempfile.NamedTemporaryFile() as sudoers:
+        sudoers.write(b'builder ALL = NOPASSWD : /usr/bin/pacman\n')
+        sudoers.flush()
+        aci.copy(sudoers.name, '/etc/sudoers.d/builder')
+    # set up mount points for user's pkgbuild and repo
+    aci.run('mkdir', '-p', '/var/lib/pkgmaster')
+    aci.mount_add('repo', '/var/lib/pkgmaster')
+    aci.run('mkdir', '-p', '/build/pkgbuild')
+    aci.mount_add('build', '/build/pkgbuild')
+    # bind envars for makepkg to use those dirs
+    # some of these dirs don't exist yet; the build user
+    # will make them under its own user
+    aci.env_add('PKGDEST', '/build/dest')
+    aci.env_add('SRCDEST', '/build/other')
+    aci.env_add('LOGDEST', '/build/other')
+    aci.env_add('SRCPKGDEST', '/build/other')
+    # fun fact, makepkg does not like it if you set
+    # BUILDDIR and SRCDEST to the same folder
+    aci.env_add('BUILDDIR', '/build/build')
+    # configure entrypoint
+    aci.copy(os.path.join(DIR, 'enter'), '/enter')
+    aci.set_exec('/enter')
+    aci.set_work_dir('/build/pkgbuild')
