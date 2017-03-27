@@ -1,0 +1,14 @@
+This configuration of Input contains:
+
+- Mono
+- Narrow
+- Regular weight (for the non-bold non-italic face)
+- double-storey a
+- single-storey g
+- i and l with top serifs and no bottom serifs
+- slashed zero
+- centered asterisk
+- recurve braces
+- 1.2x line spacing
+
+Note that, because Input's license forbids redistribution, I cannot include the font in this repo. The PKGBUILD will download it from the source site. You may want to save a copy of the zip archive just in case it ever goes away.

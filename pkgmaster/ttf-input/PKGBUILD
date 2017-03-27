@@ -1,0 +1,21 @@
+pkgname=ttf-input
+pkgver=1.2
+pkgrel=2
+pkgdesc='A font system for code by Font Bureau'
+arch=('any')
+url='http://input.fontbureau.com'
+license=('custom')
+depends=()
+# TODO: use long build urls
+# for all weights and variants:
+# http://input.fontbureau.com/build/?fontSelection=whole&a=0&g=ss&i=topserif&l=topserif&zero=slash&asterisk=height&braces=0&preset=default&line-height=1.2&accept=I+do&email=
+# for mono narrow only:
+# http://input.fontbureau.com/build/?fontSelection=fourStyleFamily&regular=InputMonoNarrow-Regular&italic=InputMonoNarrow-Italic&bold=InputMonoNarrow-Bold&boldItalic=InputMonoNarrow-BoldItalic&a=0&g=ss&i=topserif&l=topserif&zero=slash&asterisk=height&braces=0&preset=default&line-height=1.2&accept=I+do&email=
+source=("${pkgname}::http://input.fontbureau.com/build/?fontSelection=fourStyleFamily&regular=InputMonoNarrow-Regular&italic=InputMonoNarrow-Italic&bold=InputMonoNarrow-Bold&boldItalic=InputMonoNarrow-BoldItalic&a=0&g=ss&i=topserif&l=topserif&zero=slash&asterisk=height&braces=0&preset=default&line-height=1.2&accept=I+do&email=")
+sha256sums=('847fe2ded34b0a5024e5ec9516afcac6d5928bf2171a46f02410123dc9fd9238')
+
+package() {
+  install -dm755 "${pkgdir}/usr/share/fonts/TTF"
+  find "${srcdir}/Input_Fonts"  -name '*.ttf' -exec install -m644 {} "${pkgdir}/usr/share/fonts/TTF" \;
+  install -Dm644 "${srcdir}/LICENSE.txt" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
