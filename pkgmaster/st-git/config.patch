@@ -1,0 +1,177 @@
+diff --git a/config.def.h b/config.def.h
+index e338673..7bc70f3 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -5,7 +5,7 @@
+  *
+  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
+  */
+-static char font[] = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
++static char font[] = "Input:size=10:antialias=true";
+ static int borderpx = 2;
+ 
+ /*
+@@ -16,7 +16,7 @@ static int borderpx = 2;
+  * 4: value of shell in /etc/passwd
+  * 5: value of shell in config.h
+  */
+-static char shell[] = "/bin/sh";
++static char shell[] = "/bin/bash";
+ static char *utmp = NULL;
+ static char stty_args[] = "stty raw pass8 nl -echo -iexten -cstopb 38400";
+ 
+@@ -49,7 +49,7 @@ static unsigned int actionfps = 30;
+  * blinking timeout (set to 0 to disable blinking) for the terminal blinking
+  * attribute.
+  */
+-static unsigned int blinktimeout = 800;
++static unsigned int blinktimeout = 0;
+ 
+ /*
+  * thickness of underline and bar cursors
+@@ -84,31 +84,24 @@ static unsigned int tabspaces = 8;
+ 
+ /* Terminal colors (16 first used in escape sequence) */
+ static const char *colorname[] = {
+-	/* 8 normal colors */
+-	"black",
+-	"red3",
+-	"green3",
+-	"yellow3",
+-	"blue2",
+-	"magenta3",
+-	"cyan3",
+-	"gray90",
+-
+-	/* 8 bright colors */
+-	"gray50",
+-	"red",
+-	"green",
+-	"yellow",
+-	"#5c5cff",
+-	"magenta",
+-	"cyan",
+-	"white",
++	"#202020", /* black dark    */
++	"#b03030", /* red dark      */
++	"#00b000", /* green dark    */
++	"#b08040", /* yellow dark   */
++	"#0070c4", /* blue dark     */
++	"#b000b0", /* magenta dark  */
++	"#00b0b0", /* cyan dark     */
++	"#b0b0b0", /* white dark    */
++	"#505050", /* black light   */
++	"#ff4040", /* red light     */
++	"#28ff28", /* green light   */
++	"#ffff28", /* yellow light  */
++	"#40a0ff", /* blue light    */
++	"#ff50ff", /* magenta light */
++	"#30ffff", /* cyan light    */
++	"#ffffff", /* white light   */
+ 
+ 	[255] = 0,
+-
+-	/* more colors can be added after 255 to use with DefaultXX */
+-	"#cccccc",
+-	"#555555",
+ };
+ 
+ 
+@@ -118,8 +111,8 @@ static const char *colorname[] = {
+  */
+ static unsigned int defaultfg = 7;
+ static unsigned int defaultbg = 0;
+-static unsigned int defaultcs = 256;
+-static unsigned int defaultrcs = 257;
++static unsigned int defaultcs = 7;
++static unsigned int defaultrcs = 0;
+ 
+ /*
+  * Default shape of cursor
+@@ -128,7 +121,7 @@ static unsigned int defaultrcs = 257;
+  * 6: Bar ("|")
+  * 7: Snowman ("☃")
+  */
+-static unsigned int cursorshape = 2;
++static unsigned int cursorshape = 6;
+ 
+ /*
+  * Default columns and rows numbers
+@@ -148,7 +141,7 @@ static unsigned int mousebg = 0;
+  * Color used to display font attributes when fontconfig selected a font which
+  * doesn't match the ones requested.
+  */
+-static unsigned int defaultattr = 11;
++static unsigned int defaultattr = 7;
+ 
+ /*
+  * Internal mouse shortcuts.
+@@ -162,30 +155,21 @@ static MouseShortcut mshortcuts[] = {
+ 
+ static MouseKey mkeys[] = {
+ 	/* button               mask            function        argument */
+-	{ Button4,              ShiftMask,      kscrollup,      {.i =  1} },
+-	{ Button5,              ShiftMask,      kscrolldown,    {.i =  1} },
++	{ Button4,              XK_NO_MOD,      kscrollup,      {.i =  3} },
++	{ Button5,              XK_NO_MOD,      kscrolldown,    {.i =  3} },
+ };
+ 
+ /* Internal keyboard shortcuts. */
+-#define MODKEY Mod1Mask
++#define MODKEY ControlMask
+ 
+ static Shortcut shortcuts[] = {
+ 	/* mask                 keysym          function        argument */
+-	{ XK_ANY_MOD,           XK_Break,       sendbreak,      {.i =  0} },
+-	{ ControlMask,          XK_Print,       toggleprinter,  {.i =  0} },
+-	{ ShiftMask,            XK_Print,       printscreen,    {.i =  0} },
+-	{ XK_ANY_MOD,           XK_Print,       printsel,       {.i =  0} },
+-	{ MODKEY|ShiftMask,     XK_Prior,       xzoom,          {.f = +1} },
+-	{ MODKEY|ShiftMask,     XK_Next,        xzoom,          {.f = -1} },
+-	{ MODKEY|ShiftMask,     XK_Home,        xzoomreset,     {.f =  0} },
+-	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
+-	{ MODKEY|ShiftMask,     XK_Insert,      clippaste,      {.i =  0} },
+ 	{ MODKEY|ShiftMask,     XK_C,           clipcopy,       {.i =  0} },
+ 	{ MODKEY|ShiftMask,     XK_V,           clippaste,      {.i =  0} },
+-	{ MODKEY,               XK_Num_Lock,    numlock,        {.i =  0} },
+-	{ MODKEY,               XK_Control_L,   iso14755,       {.i =  0} },
+-	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
+-	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
++	{ MODKEY|ShiftMask,     XK_Up,          kscrollup,      {.i = 3} },
++	{ MODKEY|ShiftMask,     XK_Page_Up,     kscrollup,      {.i = 6} },
++	{ MODKEY|ShiftMask,     XK_Down,        kscrolldown,    {.i = 3} },
++	{ MODKEY|ShiftMask,     XK_Page_Down,   kscrolldown,    {.i = 6} },
+ };
+ 
+ /*
+@@ -274,7 +258,7 @@ static Key key[] = {
+ 	{ XK_KP_Delete,     ControlMask,    "\033[3;5~",    +1,    0,    0},
+ 	{ XK_KP_Delete,     ShiftMask,      "\033[2K",      -1,    0,    0},
+ 	{ XK_KP_Delete,     ShiftMask,      "\033[3;2~",    +1,    0,    0},
+-	{ XK_KP_Delete,     XK_ANY_MOD,     "\033[P",       -1,    0,    0},
++	{ XK_KP_Delete,     XK_ANY_MOD,     "\033[3~",      -1,    0,    0},
+ 	{ XK_KP_Delete,     XK_ANY_MOD,     "\033[3~",      +1,    0,    0},
+ 	{ XK_KP_Multiply,   XK_ANY_MOD,     "\033Oj",       +2,    0,    0},
+ 	{ XK_KP_Add,        XK_ANY_MOD,     "\033Ok",       +2,    0,    0},
+@@ -345,7 +329,7 @@ static Key key[] = {
+ 	{ XK_Delete,        ControlMask,    "\033[3;5~",    +1,    0,    0},
+ 	{ XK_Delete,        ShiftMask,      "\033[2K",      -1,    0,    0},
+ 	{ XK_Delete,        ShiftMask,      "\033[3;2~",    +1,    0,    0},
+-	{ XK_Delete,        XK_ANY_MOD,     "\033[P",       -1,    0,    0},
++	{ XK_Delete,        XK_ANY_MOD,     "\033[3~",      -1,    0,    0},
+ 	{ XK_Delete,        XK_ANY_MOD,     "\033[3~",      +1,    0,    0},
+ 	{ XK_BackSpace,     XK_NO_MOD,      "\177",          0,    0,    0},
+ 	{ XK_BackSpace,     Mod1Mask,       "\033\177",      0,    0,    0},
+diff --git a/st.c b/st.c
+index 523f4ce..a43a386 100644
+--- a/st.c
++++ b/st.c
+@@ -61,7 +61,7 @@ char *argv0;
+ #define XK_ANY_MOD    UINT_MAX
+ #define XK_NO_MOD     0
+ #define XK_SWITCH_MOD (1<<13)
+-#define histsize 2000
++#define histsize 20000
+ 
+ /* macros */
+ #define MIN(a, b)		((a) < (b) ? (a) : (b))

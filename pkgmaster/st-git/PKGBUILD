@@ -1,0 +1,53 @@
+# Maintainer: Gaetan Bisson <bisson@archlinux.org>
+# Contributor: Scytrin dai Kinthra <scytrin@gmail.com>
+
+pkgname=st-git
+pkgver=r964.gc63a87c
+pkgrel=1
+pkgdesc='Simple virtual terminal emulator for X'
+url='http://git.suckless.org/st/'
+arch=('i686' 'x86_64' 'armv7h')
+license=('MIT')
+depends=('libxft')
+makedepends=('ncurses' 'libxext' 'git')
+provides=('st')
+conflicts=('st')
+source=("${pkgname}::git+http://git.suckless.org/st#branch=master"
+        'st-scrollback-20170104-c63a87c.diff'
+        'st-scrollback-mouse-20161020-6e79e83.diff'
+        'st-scrollback-mouse-altscreen-20170213-c63a87c.diff'
+        'config.patch')
+sha256sums=('SKIP'
+            '580678161375583bebed1465fe6aaa4a11cac36765dabff2307559b17e5e8fe6'
+            '7a8a72e9cf88bae1c30c17cad28b059e7b818be3210aff55a2945caaa0d2109c'
+            '6acc128939b867a56b3dcd30c0ab7f2d8b65bd838f942a64d07e745901064a00'
+            '19d7d09b78d1eb2dc93d2b9cd05745eebf05a59386b0195f2ae4b06a34474819')
+
+pkgver() {
+  cd "${pkgname}"
+  echo r$(git rev-list --count HEAD).g$(git rev-parse --short HEAD)
+}
+
+prepare() {
+  cd "${pkgname}"
+  sed -i 's/CPPFLAGS =/CPPFLAGS +=/g' config.mk
+  for PATCH in "${source[@]}"; do
+    if [[ "${PATCH}" == *.diff || "${PATCH}" == *.patch ]]; then
+      patch -Np1 -i "${srcdir}/${PATCH}"
+    fi
+  done
+}
+
+build() {
+  cd "${pkgname}"
+  make X11INC=/usr/include/X11 X11LIB=/usr/lib/X11
+}
+
+package() {
+  cd "${pkgname}"
+  export TERMINFO="${pkgdir}/usr/share/terminfo"
+  install -d "${TERMINFO}"
+  make PREFIX=/usr DESTDIR="${pkgdir}" install
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  rm -rf "${pkgdir}/usr/share/terminfo" # ncurses 5.9.5+ provides these now
+}
