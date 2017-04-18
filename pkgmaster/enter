@@ -29,6 +29,9 @@ repo-add /var/lib/pkgmaster/user.db.tar.xz
 # implements via /dev/fd access
 # appc does not mandate this symlink so we must make it ourselves
 # https://github.com/appc/spec/issues/641
+# for some reason, this symlink already exists at build time, so
+# we can't bake it into the image, and we have to make it at run
+# time instead
 ln -sf /proc/self/fd /dev/fd
 
 # build it!
