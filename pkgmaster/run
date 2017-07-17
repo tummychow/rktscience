@@ -1,0 +1,23 @@
+#!/usr/bin/python3
+
+import os
+import os.path
+import sys
+
+DIR = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.dirname(DIR))
+import rkt_run
+
+rkt_run.run(rkt_run.Application(
+    image=sys.argv[1],
+    volume={
+        'build': rkt_run.Volume(source=os.path.realpath(sys.argv[2])),
+        'repo': rkt_run.Volume(source=os.path.realpath(sys.argv[3]), read_only=True),
+    },
+    environment={
+        'UID': os.getuid(),
+        'GID': os.getgid(),
+    },
+    net=['host'],
+    insecure_options={rkt_run.InsecureOptions.IMAGE},
+))

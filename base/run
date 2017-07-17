@@ -1,0 +1,27 @@
+#!/usr/bin/python3
+
+import os.path
+import sys
+
+DIR = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.dirname(DIR))
+import rkt_run
+
+# specify arbitrary mounts using <host path>:<container path> syntax
+volumes = dict()
+mounts = dict()
+for idx, entry in enumerate(sys.argv[2:]):
+    vol, mnt = entry.split(':', maxsplit=1)
+    name = f'vol{idx}'
+    volumes[name] = rkt_run.Volume(source=os.path.realpath(vol))
+    mounts[name] = mnt
+
+rkt_run.run(rkt_run.Application(
+    image=sys.argv[1],
+    net=['host'],
+    insecure_options={rkt_run.InsecureOptions.IMAGE},
+    exec='/usr/bin/bash',
+    interactive=True,
+    volume=volumes,
+    mount=mounts,
+))
