@@ -114,7 +114,7 @@ class Application(t.NamedTuple):
     stage1_url: t.Optional[t.Text] = None # TODO: url?
 
     def args(self) -> t.List[str]:
-        ret = list()
+        ret = [self.image]
 
         if self.debug is not None:
             ret.append(f'--debug={str(self.debug).lower()}')
@@ -228,7 +228,6 @@ class Application(t.NamedTuple):
         if self.stage1_url is not None:
             ret.append(f'--stage1-url={self.stage1_url}')
 
-        ret.append(self.image)
         if self.arguments is not None:
             ret.append('--')
             ret.extend(self.arguments)
@@ -246,6 +245,6 @@ def multi_args(*apps: Application) -> t.List[str]:
 
 def run(*apps: Application, extra_args: t.Sequence[str] = []) -> None:
     args = multi_args(*apps)
-    args.insert(0, 'run')
+    args[0:0] = ['rkt', 'run']
     args.extend(extra_args)
     os.execvp('rkt', args)
