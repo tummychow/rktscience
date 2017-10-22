@@ -24,7 +24,7 @@ The PKGBUILD process I recommend is an entirely manual one (no yaourt or pacaur 
 4. invoke rkt to launch pkgmaster, binding the build and repo directories appropriately:
 
     ```bash
-    sudo pkgmaster/run <path to pkgmaster ACI> <path to PKGBUILD folder> /var/lib/pkgmaster
+    pkgmaster/run <path to pkgmaster ACI> <path to PKGBUILD folder> /var/lib/pkgmaster
     ```
 
 5. you should have a package in the repo directory, and you can install it with pacman like anything else: `pacman -Syu <name of built package>`

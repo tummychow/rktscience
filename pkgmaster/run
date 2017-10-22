@@ -12,7 +12,7 @@ rkt_run.run(rkt_run.Application(
     image=sys.argv[1],
     volume={
         'build': rkt_run.Volume(source=os.path.realpath(sys.argv[2])),
-        'repo': rkt_run.Volume(source=os.path.realpath(sys.argv[3]), read_only=True),
+        'repo': rkt_run.Volume(source=os.path.realpath(sys.argv[3])),
     },
     environment={
         'UID': os.getuid(),

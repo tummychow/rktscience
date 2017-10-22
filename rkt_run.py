@@ -245,6 +245,6 @@ def multi_args(*apps: Application) -> t.List[str]:
 
 def run(*apps: Application, extra_args: t.Sequence[str] = []) -> None:
     args = multi_args(*apps)
-    args[0:0] = ['rkt', 'run']
+    args[0:0] = ['sudo', 'rkt', 'run']
     args.extend(extra_args)
-    os.execvp('rkt', args)
+    os.execvp('sudo', args)
