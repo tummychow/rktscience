@@ -1,0 +1,26 @@
+# Maintainer: Adrian Perez <aperez@igalia.com>
+
+pkgname='beancount-hg'
+pkgver=r4348.h6b61612e7f44
+pkgrel=1
+pkgdesc='Double-Entry Accounting from Text Input'
+arch=('i686' 'x86_64')
+url='http://furius.ca/beancount'
+license=('GPL')
+depends=('python>=3.5' 'mpdecimal' 'python-ply' 'python-dateutil'
+         'python-bottle' 'python-lxml')
+makedepends=('mercurial')
+optdepends=('python-magic-ahupp' 'python-google-api-python-client'
+            'python-beautifulsoup4' 'python-chardet')
+source=("${pkgname}::hg+https://bitbucket.org/blais/beancount#branch=default")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgname}"
+  echo r$(hg identify -nr.).h$(hg identify -ir.)
+}
+
+package() {
+  cd "${pkgname}"
+  python setup.py install --prefix=/usr --root="${pkgdir}"
+}
