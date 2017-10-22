@@ -1,0 +1,32 @@
+# Maintainer: Dave Reisner <d@falconindy.com>
+
+pkgname=auracle-git
+pkgver=r23.g90b1793
+pkgrel=1
+pkgdesc='A flexible client for the AUR'
+arch=('i686' 'x86_64')
+url='https://github.com/falconindy/auracle'
+license=('MIT')
+depends=('pacman' 'libarchive' 'curl')
+makedepends=('meson' 'git')
+provides=('auracle')
+conflicts=('auracle')
+source=("${pkgname}::git+https://github.com/falconindy/auracle#branch=master")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgname}"
+  echo r$(git rev-list --count HEAD).g$(git rev-parse --short HEAD)
+}
+
+build() {
+  cd "${pkgname}"
+  meson build --prefix /usr -D buildtype=release
+  ninja -C build
+}
+
+package() {
+  cd "${pkgname}"
+  DESTDIR="${pkgdir}" ninja -C build install
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
