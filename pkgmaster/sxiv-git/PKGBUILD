@@ -1,0 +1,46 @@
+# Maintainer: Jason Ryan <jasonwryan@gmail.com>
+# Contributor: Steven Allen <steven@stebalien.com>
+# Contributor: Army
+# Contributor: Bastien Dejean <baskerville@lavabit.com>
+
+pkgname=sxiv-git
+pkgver=1.3.2.r77.g96445c3
+pkgrel=2
+pkgdesc='Simple X image viewer'
+arch=('i686' 'x86_64')
+url='https://github.com/muennich/sxiv'
+license=('GPL2')
+depends=('imlib2' 'libexif' 'libxft' 'hicolor-icon-theme')
+makedepends=('git')
+provides=('sxiv')
+conflicts=('sxiv')
+source=("${pkgname}::git+https://github.com/muennich/sxiv#branch=master"
+        'config.patch')
+sha256sums=('SKIP'
+            'bfddb3a6c0c2f5eafe9a9c666da444b505ba485aaa7cc9ec37b146baba49bc30')
+
+pkgver() {
+  cd "${pkgname}"
+  git describe --long --tags | sed 's/^v//g;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+prepare() {
+  cd "${pkgname}"
+  for PATCH in "${source[@]}"; do
+    if [[ "${PATCH}" == *.diff || "${PATCH}" == *.patch ]]; then
+      patch -Np1 -i "${srcdir}/${PATCH}"
+    fi
+  done
+}
+
+build() {
+  cd "${pkgname}"
+  make PREFIX="/usr"
+}
+
+package() {
+  cd "${pkgname}"
+  make PREFIX=/usr DESTDIR="${pkgdir}" install
+  make -C icon PREFIX=/usr DESTDIR="${pkgdir}" install
+  install -Dm644 sxiv.desktop "${pkgdir}/usr/share/applications/sxiv.desktop"
+}
