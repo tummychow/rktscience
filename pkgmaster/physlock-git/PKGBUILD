@@ -1,0 +1,30 @@
+# Maintainer: Bert Muennich <ber.t at posteo.de>
+
+pkgname=physlock-git
+pkgver=11.r20.g220edce
+pkgrel=1
+pkgdesc='lightweight linux console locking tool'
+arch=('i686' 'x86_64')
+license=('GPL2')
+url='https://github.com/muennich/physlock'
+depends=('pam')
+makedepends=('git')
+provides=('physlock')
+source=("${pkgname}::git+https://github.com/muennich/physlock#branch=master")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "${pkgname}"
+  git describe --long --tags | sed 's/^v//g;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+build() {
+  cd "${pkgname}"
+  make PREFIX="/usr"
+}
+
+package() {
+  cd "${pkgname}"
+  make DESTDIR="${pkgdir}" PREFIX=/usr install
+}
+
