@@ -12,7 +12,7 @@ depends=('libxft')
 makedepends=('ncurses' 'libxext' 'git')
 provides=('st')
 conflicts=('st')
-source=("${pkgname}::git+http://git.suckless.org/st#branch=master"
+source=("${pkgname}::git+http://git.suckless.org/st#commit=c63a87cd936c1eeef14c4c21572e5b782d3df4bc"
         'st-scrollback-20170104-c63a87c.diff'
         'st-scrollback-mouse-20161020-6e79e83.diff'
         'st-scrollback-mouse-altscreen-20170213-c63a87c.diff'
