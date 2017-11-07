@@ -19,5 +19,6 @@ rkt_run.run(rkt_run.Application(
         'GID': os.getgid(),
     },
     net=['host'],
+    dns=['host'],
     insecure_options={rkt_run.InsecureOptions.IMAGE},
 ))
