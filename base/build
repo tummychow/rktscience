@@ -36,6 +36,7 @@ rootfs = rootfs.resolve()
 
 packages = {
     'bash',
+    'bind-tools',
     'bzip2',
     'coreutils',
     'diffutils',
@@ -45,6 +46,7 @@ packages = {
     'gawk',
     'grep',
     'gzip',
+    'iproute2',
     'iputils',
     'less',
     'pacman',
