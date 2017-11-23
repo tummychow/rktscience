@@ -10,8 +10,12 @@ license=('GPL')
 depends=('python>=3.5' 'mpdecimal' 'python-ply' 'python-dateutil'
          'python-bottle' 'python-lxml')
 makedepends=('mercurial')
-optdepends=('python-magic-ahupp' 'python-google-api-python-client'
-            'python-beautifulsoup4' 'python-chardet')
+optdepends=('python-magic-ahupp: importer cache (beancount.utils.file_type)'
+            'python-chardet: importer cache (beancount.utils.file_type)'
+            'python-beautifulsoup4: OFX importer (beancount.ingest.importers.ofx)'
+            'python-google-api-python-client: uploading to Google Sheets (beancount.tools.sheets_upload), uploading/downloading Google Docs documentation')
+provides=('beancount')
+conflicts=('beancount')
 source=("${pkgname}::hg+https://bitbucket.org/blais/beancount#branch=default")
 sha256sums=('SKIP')
 

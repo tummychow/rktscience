@@ -5,11 +5,12 @@ pkgver=11.r20.g220edce
 pkgrel=1
 pkgdesc='lightweight linux console locking tool'
 arch=('i686' 'x86_64')
-license=('GPL2')
 url='https://github.com/muennich/physlock'
+license=('GPL2')
 depends=('pam')
 makedepends=('git')
 provides=('physlock')
+conflicts=('physlock')
 source=("${pkgname}::git+https://github.com/muennich/physlock#branch=master")
 sha256sums=('SKIP')
 
