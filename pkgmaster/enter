@@ -13,7 +13,7 @@ export PATH=$PATH:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
 
 # give the builder user the same IDs as the host user
 groupadd -f -g $GID builder
-useradd -u $UID -g builder builder
+useradd -u $UID -g builder -m builder
 
 # create the output directories
 for DIR in /build/{dest,other,build} ; do
