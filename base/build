@@ -36,7 +36,6 @@ rootfs = rootfs.resolve()
 
 packages = {
     'bash',
-    'bind-tools',
     'bzip2',
     'coreutils',
     'diffutils',
