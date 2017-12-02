@@ -1,0 +1,20 @@
+#!/usr/bin/python3
+
+import datetime
+import os.path
+import sys
+import tempfile
+
+DIR = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.dirname(DIR))
+import acbuild
+
+today = datetime.datetime.utcnow().date().strftime('%Y%m%d')
+
+with acbuild.ACBuild(f'x11-{today}.aci', initial_aci=os.path.realpath(sys.argv[1]), debug=True) as aci:
+    aci.set_name('x11')
+    aci.label_add('version', today)
+    aci.run('pacman', '-Syu', '--noconfirm', 'xterm', 'xorg-xauth')
+    aci.mount_add('x11sock', '/tmp/.X11-unix/X0')
+    aci.copy(os.path.join(DIR, 'enter'), '/enter')
+    aci.set_exec('/enter')

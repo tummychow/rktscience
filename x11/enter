@@ -1,0 +1,16 @@
+#!/usr/bin/bash
+
+set -e
+
+# stolen from pkgmaster/enter
+# TODO: there should be a way of sharing these
+groupadd -f -g $GID user
+useradd -u $UID -g user -m user
+ln -sf /proc/self/fd /dev/fd
+
+# take the credential passed to us in $XCOOKIE
+# and turn it into an Xauthority file
+runuser -u user -- touch $XAUTHORITY
+runuser -u user -- xauth -f $XAUTHORITY add $DISPLAY . $XCOOKIE
+
+runuser -u user -- xterm

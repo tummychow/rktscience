@@ -1,0 +1,89 @@
+#!/usr/bin/python3
+
+import os
+import os.path
+import sys
+import subprocess
+import tempfile
+
+DIR = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.dirname(DIR))
+import rkt_run
+
+# we need to know what display the container will be opening on
+# details on the format of DISPLAY can be found in X(7) manpage , "Display Names"
+# the "unix" form is explained in Xorg(1) manpage, "Environment Variables",
+# specifically "XLOCAL"
+# note that this section is often removed from the manpages of newer systems
+# where it is no longer relevant, see
+# https://www.x.org/releases/X11R7.6/doc/man/man1/Xorg.1.xhtml#heading6
+DISPLAY = os.getenv('DISPLAY')
+DISPLAYHOST, DISPLAYNUM = DISPLAY.split(':', 2)
+# X screens are not used in modern installations, you should be using XRandR
+# so we don't support them
+if '.' in DISPLAYNUM:
+    raise ValueError(f'$DISPLAY={DISPLAY} contains a screen number')
+# remote X servers are not supported because we need the unix socket to pass
+# to the container
+# therefore, the only acceptable values here are "unix", or "$HOSTNAME/unix",
+# which are equivalent (they mean "unix socket on localhost")
+if DISPLAYHOST and DISPLAYHOST != 'unix':
+    import socket
+    if DISPLAYHOST != f'{socket.gethostname()}/unix':
+        raise ValueError(f'$DISPLAY={DISPLAY} contains a hostname that is not "unix"')
+
+# TODO: we should have the option of opening xephyr here
+
+# we need to generate an xauth credential for the container to access the display
+# the first time X is run, startx (the official xinit wrapper) will create your first credential
+# but we're not going through startx so we have to generate it ourselves
+with tempfile.NamedTemporaryFile() as xauthority:
+    # xauth does not support generating to stdout, so we have to write to a tempfile
+    # https://www.x.org/releases/X11R7.6/doc/xextproto/security.html#securitygenerateauthentication
+    # TODO: timeout 0 disables automatic server expiry, do we want that?
+    subprocess.run(
+        ['xauth', '-f', xauthority.name, 'generate', DISPLAY, '.', 'untrusted', 'timeout', '300'],
+        check=True
+    )
+    # then we read the tempfile to pull out the credential
+    # TODO: universal_newlines is not necessary here, the credential is always ascii
+    COOKIE = subprocess.run(
+        ['xauth', '-f', xauthority.name, 'list'],
+        stdout=subprocess.PIPE,
+        universal_newlines=True,
+        check=True
+    ).stdout
+    # there should only be one credential in that file, and only one line of output
+    [COOKIE] = COOKIE.split('\n')[:-1]
+    # the last space-separated item in the line is the 32-bit hex value of the cookie
+    COOKIE = COOKIE.split(' ')[-1]
+    # we don't need the file now that we have that, so we can unlink it
+
+rkt_run.run(rkt_run.Application(
+    image=sys.argv[1],
+    # the unix socket for display 0 lives at /tmp/.X11-unix/X0, etc
+    # see Xserver(1) manpage for details
+    # you can connect to any socket for which your user has write permissions
+    # this is true even if the socket itself is in a read-only filesystem
+    # of course you need a writable filesystem to create the socket's inode, but that
+    # already happened on the host, so we can bind-mount it read-only
+    # this prevents misbehaving containers that might, say, delete the socket from
+    # their bind-mounted filesystem
+    # https://bobtfish.github.io/blog/2013/10/06/read-only-bind-mounts-and-docker/
+    volume={
+        'x11sock': rkt_run.Volume(source=f'/tmp/.X11-unix/X{DISPLAYNUM}', read_only=True),
+    },
+    environment={
+        'UID': os.getuid(),
+        'GID': os.getgid(),
+        # this is the default value but we set it anyway
+        'XAUTHORITY': '/home/user/.Xauthority',
+        # we always use display 0 in the container, remapping it to another display in the host
+        'DISPLAY': ':0',
+        # this is not a special variable for X
+        # the enter script uses it to create the Xauthority file
+        'XCOOKIE': COOKIE,
+    },
+    net=['host'],
+    insecure_options={rkt_run.InsecureOptions.IMAGE},
+))
