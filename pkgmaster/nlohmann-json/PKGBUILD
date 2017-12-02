@@ -1,0 +1,24 @@
+pkgname=nlohmann-json
+pkgver=2.1.1
+pkgrel=1
+pkgdesc='JSON for Modern C++'
+url='https://github.com/nlohmann/json'
+license=('MIT')
+arch=('i686' 'x86_64')
+makedepends=('cmake')
+source=("https://github.com/nlohmann/json/archive/v${pkgver}.tar.gz")
+sha256sums=('59b85ebe61d9dcbd24946f2082ce5943e276f05b4ef1baeb3c6c10d324333053')
+
+build() {
+  cd "json-${pkgver}"
+  mkdir build
+  cd build
+  cmake -DCMAKE_INSTALL_PREFIX=/usr -DBuildTests=OFF ..
+  make
+}
+
+package() {
+  cd "json-${pkgver}/build"
+  make DESTDIR="${pkgdir}" install
+  install -Dm644 ../LICENSE.MIT "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE.MIT"
+}
