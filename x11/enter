@@ -13,4 +13,5 @@ ln -sf /proc/self/fd /dev/fd
 runuser -u user -- touch $XAUTHORITY
 runuser -u user -- xauth -f $XAUTHORITY add $DISPLAY . $XCOOKIE
 
-runuser -u user -- xterm
+# TODO: using runuser -l clears all envars, can we avoid having to set DISPLAY manually?
+runuser -l user -c "env DISPLAY=$DISPLAY xterm"

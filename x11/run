@@ -41,8 +41,9 @@ with tempfile.NamedTemporaryFile() as xauthority:
     # xauth does not support generating to stdout, so we have to write to a tempfile
     # https://www.x.org/releases/X11R7.6/doc/xextproto/security.html#securitygenerateauthentication
     # TODO: timeout 0 disables automatic server expiry, do we want that?
+    # TODO: if you give xterm an untrusted xauth cookie, it actually crashes when you press TAB
     subprocess.run(
-        ['xauth', '-f', xauthority.name, 'generate', DISPLAY, '.', 'untrusted', 'timeout', '300'],
+        ['xauth', '-f', xauthority.name, 'generate', DISPLAY, '.', 'trusted', 'timeout', '300'],
         check=True
     )
     # then we read the tempfile to pull out the credential
