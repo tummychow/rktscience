@@ -12,6 +12,7 @@ import rkt_run
 
 # we need to know what display the container will be opening on
 # details on the format of DISPLAY can be found in X(7) manpage , "Display Names"
+# https://www.x.org/releases/X11R7.6/doc/man/man7/X.7.xhtml#heading5
 # the "unix" form is explained in Xorg(1) manpage, "Environment Variables",
 # specifically "XLOCAL"
 # note that this section is often removed from the manpages of newer systems
@@ -25,7 +26,7 @@ if '.' in DISPLAYNUM:
     raise ValueError(f'$DISPLAY={DISPLAY} contains a screen number')
 # remote X servers are not supported because we need the unix socket to pass
 # to the container
-# therefore, the only acceptable values here are "unix", or "$HOSTNAME/unix",
+# therefore, the only acceptable values here are "", "unix", or "$HOSTNAME/unix",
 # which are equivalent (they mean "unix socket on localhost")
 if DISPLAYHOST and DISPLAYHOST != 'unix':
     import socket
@@ -47,8 +48,13 @@ with tempfile.NamedTemporaryFile() as xauthority:
         check=True
     )
     # then we read the tempfile to pull out the credential
+    # nlist outputs a more consistent format (no human-readable text, only hex, single
+    # spaces to separate columns)
+    # however, the last column is formatted the same way whether you use list or nlist,
+    # so we could conceivably use either command to get it
+    # https://www.x.org/releases/X11R7.6/doc/man/man1/xauth.1.xhtml
     COOKIE = subprocess.run(
-        ['xauth', '-f', xauthority.name, 'list'],
+        ['xauth', '-f', xauthority.name, 'nlist'],
         stdout=subprocess.PIPE,
         check=True
     ).stdout
@@ -64,6 +70,7 @@ rkt_run.run(rkt_run.Application(
     image=sys.argv[1],
     # the unix socket for display 0 lives at /tmp/.X11-unix/X0, etc
     # see Xserver(1) manpage for details
+    # https://www.x.org/releases/X11R7.6/doc/man/man1/Xserver.1.xhtml#heading14
     # you can connect to any socket for which your user has write permissions
     # this is true even if the socket itself is in a read-only filesystem
     # of course you need a writable filesystem to create the socket's inode, but that
@@ -78,6 +85,7 @@ rkt_run.run(rkt_run.Application(
         'UID': os.getuid(),
         'GID': os.getgid(),
         # this is the default value but we set it anyway
+        # https://www.x.org/releases/X11R7.6/doc/man/man1/xauth.1.xhtml#heading8
         'XAUTHORITY': '/home/user/.Xauthority',
         # we always use display 0 in the container, remapping it to another display in the host
         'DISPLAY': ':0',
