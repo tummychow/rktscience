@@ -37,6 +37,7 @@ if DISPLAYHOST and DISPLAYHOST != 'unix':
 
 # we need to generate an xauth credential for the container to access the display
 # the first time X is run, startx (the official xinit wrapper) will create your first credential
+# https://cgit.freedesktop.org/xorg/app/xinit/tree/startx.cpp?h=xinit-1.3.4#n284
 # but we're not going through startx so we have to generate it ourselves
 with tempfile.NamedTemporaryFile() as xauthority:
     # xauth does not support generating to stdout, so we have to write to a tempfile
