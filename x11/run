@@ -46,17 +46,17 @@ with tempfile.NamedTemporaryFile() as xauthority:
         check=True
     )
     # then we read the tempfile to pull out the credential
-    # TODO: universal_newlines is not necessary here, the credential is always ascii
     COOKIE = subprocess.run(
         ['xauth', '-f', xauthority.name, 'list'],
         stdout=subprocess.PIPE,
-        universal_newlines=True,
         check=True
     ).stdout
     # there should only be one credential in that file, and only one line of output
-    [COOKIE] = COOKIE.split('\n')[:-1]
-    # the last space-separated item in the line is the 32-bit hex value of the cookie
-    COOKIE = COOKIE.split(' ')[-1]
+    [COOKIE] = COOKIE.split(b'\n')[:-1]
+    # the last space-separated item in the line is the 32-char hex value of the cookie
+    COOKIE = COOKIE.split(b' ')[-1].decode('ascii')
+    if len(COOKIE) != 32:
+        raise ValueError(f'xauth cookie {COOKIE} is malformed')
     # we don't need the file now that we have that, so we can unlink it
 
 rkt_run.run(rkt_run.Application(
