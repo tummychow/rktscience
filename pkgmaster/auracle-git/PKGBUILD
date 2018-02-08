@@ -1,14 +1,14 @@
 # Maintainer: Dave Reisner <d@falconindy.com>
 
 pkgname=auracle-git
-pkgver=r25.gac13e38
+pkgver=r29.g37ad380
 pkgrel=1
 pkgdesc='A flexible client for the AUR'
 arch=('i686' 'x86_64')
 url='https://github.com/falconindy/auracle'
 license=('MIT')
-depends=('pacman' 'libarchive' 'curl' 'nlohmann-json')
-makedepends=('meson' 'git')
+depends=('pacman' 'libarchive' 'curl')
+makedepends=('meson' 'git' 'nlohmann-json')
 provides=('auracle')
 conflicts=('auracle')
 source=("${pkgname}::git+https://github.com/falconindy/auracle#branch=master")
