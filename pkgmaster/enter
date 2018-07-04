@@ -43,11 +43,6 @@ for PKG in "${PKGDEST}"/*.tar.xz ; do
   # the database file refers to the path to the package, so we can't
   # just repo-add it without moving it to the mounted volume
   mv "${PKG}" /var/lib/pkgmaster
-  # makepkg creates symlinks back to the cwd for each package it creates,
-  # if PKGDEST is not already the cwd
-  # i despise this behavior so i delete the symlinks programmatically
-  # https://git.archlinux.org/pacman.git/tree/scripts/makepkg.sh.in#n769
-  rm "${PKG##*/}"
   repo-add /var/lib/pkgmaster/user.db.tar.xz /var/lib/pkgmaster/"${PKG##*/}"
 done
 
