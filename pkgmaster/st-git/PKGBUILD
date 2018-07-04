@@ -2,7 +2,7 @@
 # Contributor: Scytrin dai Kinthra <scytrin@gmail.com>
 
 pkgname=st-git
-pkgver=r964.gc63a87c
+pkgver=r1042.g29f341d
 pkgrel=1
 pkgdesc='Simple virtual terminal emulator for X'
 arch=('i686' 'x86_64' 'armv7h')
@@ -12,16 +12,16 @@ depends=('libxft')
 makedepends=('ncurses' 'libxext' 'git')
 provides=('st')
 conflicts=('st')
-source=("${pkgname}::git+https://git.suckless.org/st#commit=c63a87cd936c1eeef14c4c21572e5b782d3df4bc"
-        'st-scrollback-20170104-c63a87c.diff'
-        'st-scrollback-mouse-20161020-6e79e83.diff'
-        'st-scrollback-mouse-altscreen-20170213-c63a87c.diff'
+source=("${pkgname}::git+https://git.suckless.org/st#branch=master"
+        'st-scrollback-0.8.diff'
+        'st-scrollback-mouse-0.8.diff'
+        'st-scrollback-mouse-altscreen-0.8.diff'
         'config.patch')
 sha256sums=('SKIP'
-            '580678161375583bebed1465fe6aaa4a11cac36765dabff2307559b17e5e8fe6'
-            '7a8a72e9cf88bae1c30c17cad28b059e7b818be3210aff55a2945caaa0d2109c'
-            '6acc128939b867a56b3dcd30c0ab7f2d8b65bd838f942a64d07e745901064a00'
-            '19d7d09b78d1eb2dc93d2b9cd05745eebf05a59386b0195f2ae4b06a34474819')
+            '8279d347c70bc9b36f450ba15e1fd9ff62eedf49ce9258c35d7f1cfe38cca226'
+            '3fb38940cc3bad3f9cd1e2a0796ebd0e48950a07860ecf8523a5afd0cd1b5a44'
+            'e9f73c4de379d54ae107d0f4dd7b068a6628326c1bd7e11bfcd33d9079290347'
+            '110a2d1b8e834d6b6ea6850b19e2e1ebf798561abab0bcdd8100796c9dac6cae')
 
 pkgver() {
   cd "${pkgname}"
