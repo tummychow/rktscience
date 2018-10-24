@@ -9,6 +9,14 @@ rktscience depends on the following:
 - [python 3](https://www.python.org)
 - [rkt](https://coreos.com/rkt)
   - you may want to [`systemctl enable rkt-gc.timer`](https://github.com/coreos/rkt/blob/master/dist/init/systemd/rkt-gc.timer) to automatically [garbage-collect](https://coreos.com/rkt/docs/latest/subcommands/gc.html) old pods
+  - note that this service does not run `rkt image gc` to [garbage-collect](https://coreos.com/rkt/docs/latest/subcommands/image.html#rkt-image-gc) old images, unless you add that command like so:
+    ```bash
+    mkdir /etc/systemd/system/rkt-gc.service.d/
+    cat > /etc/systemd/system/rkt-gc.service.d/override.conf <<EOF
+    [Service]
+    ExecStart=/usr/bin/rkt image gc --grace-period=${GRACE_PERIOD}
+    EOF
+    ```
 - [acbuild](https://github.com/containers/build)
 - [xephyr](https://cgit.freedesktop.org/xorg/xserver/tree/hw/kdrive/ephyr/README)
 - [pulseaudio](https://www.freedesktop.org/wiki/Software/PulseAudio)
