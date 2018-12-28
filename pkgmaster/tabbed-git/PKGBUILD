@@ -1,0 +1,49 @@
+pkgname=tabbed-git
+pkgver=r255.gb5f9ec6
+pkgrel=3
+pkgdesc='Tab interface for applications supporting Xembed'
+arch=('i686' 'x86_64' 'armv7h')
+url='https://tools.suckless.org/tabbed/'
+license=('MIT')
+depends=('libxft' 'libx11')
+makedepends=('git')
+provides=('tabbed')
+conflicts=('tabbed')
+source=("${pkgname}::git+https://git.suckless.org/tabbed#branch=master"
+        'tabbed-autohide-20170824-6dc3978.diff'
+        'title.patch'
+        'config.patch')
+sha256sums=('SKIP'
+            '5b391415aa7458c4b9b33046342704aa86ce50bd9f561f003b97817e7601f1bc'
+            '0928ed3f86cf142f89435dfd169c0f0521ec137cf784ac2bf8fc429b0ac9396b'
+            'b9f97e5c1c00a5713e46b1139901b651a9875c6677a9cc8c500aa9d5ab0c8451')
+
+pkgver() {
+  cd "${pkgname}"
+  echo r$(git rev-list --count HEAD).g$(git rev-parse --short HEAD)
+}
+
+prepare() {
+  cd "${pkgname}"
+  sed \
+    -e 's/CPPFLAGS =/CPPFLAGS +=/g' \
+    -e 's/CFLAGS =/CFLAGS +=/g' \
+    -e 's/LDFLAGS =/LDFLAGS +=/g' \
+    -i config.mk
+  for PATCH in "${source[@]}"; do
+    if [[ "${PATCH}" == *.diff || "${PATCH}" == *.patch ]]; then
+      patch -Np1 -i "${srcdir}/${PATCH}"
+    fi
+  done
+}
+
+build() {
+  cd "${pkgname}"
+  make
+}
+
+package() {
+  cd "${pkgname}"
+  make PREFIX=/usr DESTDIR="${pkgdir}" install
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
