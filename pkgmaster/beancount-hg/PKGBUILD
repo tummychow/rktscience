@@ -1,7 +1,7 @@
 # Maintainer: Adrian Perez <aperez@igalia.com>
 
 pkgname=beancount-hg
-pkgver=r4690.heacd305d7db6
+pkgver=r4783.hc61debdc8334
 pkgrel=1
 pkgdesc='Double-Entry Accounting from Text Input'
 arch=('i686' 'x86_64')
