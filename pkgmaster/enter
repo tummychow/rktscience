@@ -39,7 +39,7 @@ pacman -Syu --noconfirm
 runuser -u builder -- makepkg -cs --noconfirm
 
 # TODO: repo-remove older/other versions of packages that were added?
-for PKG in "${PKGDEST}"/*.tar.xz ; do
+for PKG in "${PKGDEST}"/*.tar.zst ; do
   # the database file refers to the path to the package, so we can't
   # just repo-add it without moving it to the mounted volume
   mv "${PKG}" /var/lib/pkgmaster

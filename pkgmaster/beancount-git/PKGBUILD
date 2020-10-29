@@ -1,7 +1,7 @@
 # Maintainer: Adrian Perez <aperez@igalia.com>
 
 pkgname=beancount-git
-pkgver=2.3.2.r55.g1eab56b1
+pkgver=2.3.3.r1.g22ab3984
 pkgrel=1
 pkgdesc='Double-Entry Accounting from Text Input'
 arch=('i686' 'x86_64')
