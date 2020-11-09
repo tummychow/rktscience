@@ -4,20 +4,20 @@
 # Contributor: Bastien Dejean <baskerville@lavabit.com>
 
 pkgname=sxiv-git
-pkgver=1.3.2.r77.g96445c3
-pkgrel=2
+pkgver=26.r0.g1d28627
+pkgrel=1
 pkgdesc='Simple X image viewer'
 arch=('i686' 'x86_64')
 url='https://github.com/muennich/sxiv'
 license=('GPL2')
-depends=('imlib2' 'libexif' 'libxft' 'hicolor-icon-theme')
+depends=('imlib2' 'libexif' 'libxft' 'hicolor-icon-theme' 'xdg-utils' 'desktop-file-utils')
 makedepends=('git')
 provides=('sxiv')
 conflicts=('sxiv')
 source=("${pkgname}::git+https://github.com/muennich/sxiv#branch=master"
         'config.patch')
 sha256sums=('SKIP'
-            'bfddb3a6c0c2f5eafe9a9c666da444b505ba485aaa7cc9ec37b146baba49bc30')
+            '5dc9b22c261fb333b8b6ca99d692c7582723bdd48bcd2d8d44fc3d93f5135e41')
 
 pkgver() {
   cd "${pkgname}"

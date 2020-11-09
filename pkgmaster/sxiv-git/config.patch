@@ -1,28 +1,24 @@
 diff --git a/config.def.h b/config.def.h
-index 5af745d..5ad2d5a 100644
+index 9981ca3..2ecfe06 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -9,7 +9,7 @@ enum {
- /* bar font:
-  * (see fonts-conf(5) subsection "FONT NAMES" for valid values)
-  */
--static const char * const BAR_FONT = "monospace:size=8";
-+static const char * const BAR_FONT = "Input:size=10:antialias=true";
- 
- /* colors:
-  * (see X(7) section "COLOR NAMES" for valid values)
-@@ -27,8 +27,8 @@ static const char * const BAR_FG_COLOR = "#EEEEEE";
+@@ -18,8 +18,13 @@ enum {
   * (first/last value is used as min/max zoom level)
   */
  static const float zoom_levels[] = {
 -	 12.5,  25.0,  50.0,  75.0,
 -	100.0, 150.0, 200.0, 400.0, 800.0
-+        12.5,  25.0,  37.5,  50.0,  62.5,  75.0,  87.5,
-+       100.0, 150.0, 200.0, 300.0, 400.0, 600.0, 800.0
++       // set a low minimum zoom for shrink-to-fit
++         5.0,
++       // [round((0.25**(1/10))**x * 100, 1) for x in range(10, 0, -1)]
++        25.0,  28.7,  33.0,  37.9,  43.5,  50.0,  57.4,  66.0,  75.8,  87.1,
++       100.0,
++       // [round((0.25**(1/10))**x * 100, 1) for x in range(-1, -11, -1)]
++       114.9, 132.0, 151.6, 174.1, 200.0, 229.7, 263.9, 303.1, 348.2, 400.0
  };
  
  /* default slideshow delay (in sec, overwritten via -S option): */
-@@ -41,7 +41,7 @@ static const double GAMMA_MAX   = 10.0;
+@@ -32,7 +37,7 @@ static const double GAMMA_MAX   = 10.0;
  static const int    GAMMA_RANGE = 32;
  
  /* command i_scroll pans image 1/PAN_FRACTION of screen width/height */
@@ -31,7 +27,7 @@ index 5af745d..5ad2d5a 100644
  
  /* if false, pixelate images at zoom level != 100%,
   * toggled with 'a' key binding
-@@ -57,10 +57,10 @@ static const bool ALPHA_LAYER = false;
+@@ -48,10 +53,10 @@ static const bool ALPHA_LAYER = false;
  #ifdef _THUMBS_CONFIG
  
  /* thumbnail sizes in pixels (width == height): */
@@ -44,7 +40,7 @@ index 5af745d..5ad2d5a 100644
  
  #endif
  #ifdef _MAPPINGS_CONFIG
-@@ -72,7 +72,7 @@ static const keymap_t keys[] = {
+@@ -63,7 +68,7 @@ static const keymap_t keys[] = {
  	{ 0,            XK_Return,        g_switch_mode,        None },
  	{ 0,            XK_f,             g_toggle_fullscreen,  None },
  	{ 0,            XK_b,             g_toggle_bar,         None },
@@ -53,16 +49,16 @@ index 5af745d..5ad2d5a 100644
  	{ 0,            XK_g,             g_first,              None },
  	{ 0,            XK_G,             g_n_or_last,          None },
  	{ 0,            XK_r,             g_reload_image,       None },
-@@ -92,8 +92,6 @@ static const keymap_t keys[] = {
- 	{ 0,            XK_m,             g_toggle_image_mark,  None },
- 	{ 0,            XK_M,             g_reverse_marks,      None },
- 	{ ControlMask,  XK_m,             g_unmark_all,         None },
+@@ -84,8 +89,6 @@ static const keymap_t keys[] = {
+ 	{ 0,            XK_M,             g_mark_range,         None },
+ 	{ ControlMask,  XK_m,             g_reverse_marks,      None },
+ 	{ ControlMask,  XK_u,             g_unmark_all,         None },
 -	{ 0,            XK_N,             g_navigate_marked,    +1 },
 -	{ 0,            XK_P,             g_navigate_marked,    -1 },
  	{ 0,            XK_braceleft,     g_change_gamma,       -1 },
  	{ 0,            XK_braceright,    g_change_gamma,       +1 },
  	{ ControlMask,  XK_g,             g_change_gamma,        0 },
-@@ -108,12 +106,18 @@ static const keymap_t keys[] = {
+@@ -100,12 +103,18 @@ static const keymap_t keys[] = {
  	{ 0,            XK_Right,         t_move_sel,           DIR_RIGHT },
  	{ 0,            XK_R,             t_reload_all,         None },
  
@@ -85,12 +81,12 @@ index 5af745d..5ad2d5a 100644
  	{ 0,            XK_bracketright,  i_navigate,           +10 },
  	{ 0,            XK_bracketleft,   i_navigate,           -10 },
  	{ ControlMask,  XK_6,             i_alternate,          None },
-@@ -151,10 +155,11 @@ static const keymap_t keys[] = {
+@@ -143,10 +152,11 @@ static const keymap_t keys[] = {
  static const button_t buttons[] = {
  	/* modifiers    button            function              argument */
  	{ 0,            1,                i_cursor_navigate,    None },
 +	{ 0,            1,                i_scroll_to_edge,     DIR_LEFT | DIR_UP },
- 	{ 0,            2,                i_drag,               None },
+ 	{ 0,            2,                i_drag,               DRAG_ABSOLUTE },
  	{ 0,            3,                g_switch_mode,        None },
 -	{ 0,            4,                g_zoom,               +1 },
 -	{ 0,            5,                g_zoom,               -1 },
