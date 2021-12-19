@@ -3,21 +3,21 @@
 # Contributor: Army
 # Contributor: Bastien Dejean <baskerville@lavabit.com>
 
-pkgname=sxiv-git
-pkgver=26.r0.g1d28627
-pkgrel=1
-pkgdesc='Simple X image viewer'
+pkgname=nsxiv-git
+pkgver=28.r9.g8c54655
+pkgrel=2
+pkgdesc='Neo Simple X image viewer'
 arch=('i686' 'x86_64')
-url='https://github.com/muennich/sxiv'
+url='https://github.com/nsxiv/nsxiv'
 license=('GPL2')
-depends=('imlib2' 'libexif' 'libxft' 'hicolor-icon-theme' 'xdg-utils' 'desktop-file-utils')
+depends=('imlib2' 'giflib' 'libwebp' 'libexif' 'libxft' 'hicolor-icon-theme' 'xdg-utils' 'desktop-file-utils')
 makedepends=('git')
-provides=('sxiv')
-conflicts=('sxiv')
-source=("${pkgname}::git+https://github.com/muennich/sxiv#branch=master"
+provides=('sxiv' 'nsxiv')
+conflicts=('sxiv' 'nsxiv')
+source=("${pkgname}::git+https://github.com/nsxiv/nsxiv#commit=8c5465514deab6c7f290ea89bbc1a8ac1da1245c"
         'config.patch')
 sha256sums=('SKIP'
-            '5dc9b22c261fb333b8b6ca99d692c7582723bdd48bcd2d8d44fc3d93f5135e41')
+            '305cf456d2c9593bcb9061c76efcdc2cdbb0bda9e17d5a5f3365c1abeaab46fe')
 
 pkgver() {
   cd "${pkgname}"
@@ -31,6 +31,7 @@ prepare() {
       patch -Np1 -i "${srcdir}/${PATCH}"
     fi
   done
+  ln -s config.def.h config.h
 }
 
 build() {
@@ -40,7 +41,6 @@ build() {
 
 package() {
   cd "${pkgname}"
-  make PREFIX=/usr DESTDIR="${pkgdir}" install
-  make -C icon PREFIX=/usr DESTDIR="${pkgdir}" install
-  install -Dm644 sxiv.desktop "${pkgdir}/usr/share/applications/sxiv.desktop"
+  make PREFIX=/usr DESTDIR="${pkgdir}" install-all
+  ln -s /usr/bin/nsxiv "${pkgdir}/usr/bin/sxiv"
 }

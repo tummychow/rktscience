@@ -1,8 +1,8 @@
 diff --git a/config.def.h b/config.def.h
-index 9981ca3..2ecfe06 100644
+index 0db7a9b..ca25e11 100644
 --- a/config.def.h
 +++ b/config.def.h
-@@ -18,8 +18,13 @@ enum {
+@@ -36,8 +36,13 @@ static const suffixmode_t TITLE_SUFFIXMODE = SUFFIX_BASENAME;
   * (first/last value is used as min/max zoom level)
   */
  static const float zoom_levels[] = {
@@ -18,7 +18,7 @@ index 9981ca3..2ecfe06 100644
  };
  
  /* default slideshow delay (in sec, overwritten via -S option): */
-@@ -32,7 +37,7 @@ static const double GAMMA_MAX   = 10.0;
+@@ -50,7 +55,7 @@ static const double GAMMA_MAX   = 10.0;
  static const int    GAMMA_RANGE = 32;
  
  /* command i_scroll pans image 1/PAN_FRACTION of screen width/height */
@@ -27,7 +27,7 @@ index 9981ca3..2ecfe06 100644
  
  /* if false, pixelate images at zoom level != 100%,
   * toggled with 'a' key binding
-@@ -48,10 +53,10 @@ static const bool ALPHA_LAYER = false;
+@@ -72,10 +77,10 @@ static const int CACHE_SIZE = 4 * 1024 * 1024; /* 4MiB */
  #ifdef _THUMBS_CONFIG
  
  /* thumbnail sizes in pixels (width == height): */
@@ -40,7 +40,7 @@ index 9981ca3..2ecfe06 100644
  
  #endif
  #ifdef _MAPPINGS_CONFIG
-@@ -63,7 +68,7 @@ static const keymap_t keys[] = {
+@@ -93,7 +98,7 @@ static const keymap_t keys[] = {
  	{ 0,            XK_Return,        g_switch_mode,        None },
  	{ 0,            XK_f,             g_toggle_fullscreen,  None },
  	{ 0,            XK_b,             g_toggle_bar,         None },
@@ -49,7 +49,7 @@ index 9981ca3..2ecfe06 100644
  	{ 0,            XK_g,             g_first,              None },
  	{ 0,            XK_G,             g_n_or_last,          None },
  	{ 0,            XK_r,             g_reload_image,       None },
-@@ -84,8 +89,6 @@ static const keymap_t keys[] = {
+@@ -114,8 +119,6 @@ static const keymap_t keys[] = {
  	{ 0,            XK_M,             g_mark_range,         None },
  	{ ControlMask,  XK_m,             g_reverse_marks,      None },
  	{ ControlMask,  XK_u,             g_unmark_all,         None },
@@ -58,7 +58,7 @@ index 9981ca3..2ecfe06 100644
  	{ 0,            XK_braceleft,     g_change_gamma,       -1 },
  	{ 0,            XK_braceright,    g_change_gamma,       +1 },
  	{ ControlMask,  XK_g,             g_change_gamma,        0 },
-@@ -100,12 +103,18 @@ static const keymap_t keys[] = {
+@@ -130,12 +133,18 @@ static const keymap_t keys[] = {
  	{ 0,            XK_Right,         t_move_sel,           DIR_RIGHT },
  	{ 0,            XK_R,             t_reload_all,         None },
  
@@ -81,11 +81,12 @@ index 9981ca3..2ecfe06 100644
  	{ 0,            XK_bracketright,  i_navigate,           +10 },
  	{ 0,            XK_bracketleft,   i_navigate,           -10 },
  	{ ControlMask,  XK_6,             i_alternate,          None },
-@@ -143,10 +152,11 @@ static const keymap_t keys[] = {
+@@ -175,11 +184,12 @@ static const keymap_t keys[] = {
  static const button_t buttons[] = {
  	/* modifiers    button            function              argument */
  	{ 0,            1,                i_cursor_navigate,    None },
 +	{ 0,            1,                i_scroll_to_edge,     DIR_LEFT | DIR_UP },
+ 	{ ControlMask,  1,                i_drag,               DRAG_RELATIVE },
  	{ 0,            2,                i_drag,               DRAG_ABSOLUTE },
  	{ 0,            3,                g_switch_mode,        None },
 -	{ 0,            4,                g_zoom,               +1 },
@@ -94,4 +95,4 @@ index 9981ca3..2ecfe06 100644
 +	{ 0,            5,                i_scroll,             DIR_DOWN },
  };
  
- #endif
+ /* true means NAV_WIDTH is relative (33%), false means absolute (33 pixels) */
