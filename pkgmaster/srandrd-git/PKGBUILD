@@ -1,0 +1,40 @@
+pkgname=srandrd-git
+pkgver=r65.g4e4b754
+pkgrel=2
+pkgdesc='Simple randr daemon that reacts to monitor hotplug events'
+arch=('i686' 'x86_64')
+url='https://github.com/jceb/srandrd'
+license=('custom:MIT/X')
+depends=('libxinerama' 'libxrandr')
+makedepends=('git')
+provides=('srandrd')
+conflicts=('srandrd')
+source=("${pkgname}::git+https://github.com/jceb/srandrd#branch=master"
+        'debounce-mode.patch')
+sha256sums=('SKIP'
+            '6850893d8d328fec535e41c185b60e02b13ef51ef5f6ee54060af23338d28cf4')
+
+pkgver() {
+  cd "${pkgname}"
+  echo r$(git rev-list --count HEAD).g$(git rev-parse --short HEAD)
+}
+
+prepare() {
+  cd "${pkgname}"
+  for PATCH in "${source[@]}"; do
+    if [[ "${PATCH}" == *.diff || "${PATCH}" == *.patch ]]; then
+      patch -Np1 -i "${srcdir}/${PATCH}"
+    fi
+  done
+}
+
+build() {
+  cd "${pkgname}"
+  make
+}
+
+package() {
+  cd "${pkgname}"
+  DESTDIR="${pkgdir}" make install
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
