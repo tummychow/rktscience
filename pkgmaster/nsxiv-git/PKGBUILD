@@ -4,8 +4,8 @@
 # Contributor: Bastien Dejean <baskerville@lavabit.com>
 
 pkgname=nsxiv-git
-pkgver=28.r9.g8c54655
-pkgrel=2
+pkgver=28.r12.ge839638
+pkgrel=1
 pkgdesc='Neo Simple X image viewer'
 arch=('i686' 'x86_64')
 url='https://github.com/nsxiv/nsxiv'
@@ -14,10 +14,10 @@ depends=('imlib2' 'giflib' 'libwebp' 'libexif' 'libxft' 'hicolor-icon-theme' 'xd
 makedepends=('git')
 provides=('sxiv' 'nsxiv')
 conflicts=('sxiv' 'nsxiv')
-source=("${pkgname}::git+https://github.com/nsxiv/nsxiv#commit=8c5465514deab6c7f290ea89bbc1a8ac1da1245c"
+source=("${pkgname}::git+https://github.com/nsxiv/nsxiv#branch=master"
         'config.patch')
 sha256sums=('SKIP'
-            '305cf456d2c9593bcb9061c76efcdc2cdbb0bda9e17d5a5f3365c1abeaab46fe')
+            '9c6d367c239679903168486fea2dd6dd2d75ba8d80634174ccfce47d1bcc5e64')
 
 pkgver() {
   cd "${pkgname}"
@@ -31,7 +31,6 @@ prepare() {
       patch -Np1 -i "${srcdir}/${PATCH}"
     fi
   done
-  ln -s config.def.h config.h
 }
 
 build() {

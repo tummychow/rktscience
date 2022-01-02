@@ -1,5 +1,5 @@
 diff --git a/config.def.h b/config.def.h
-index 0db7a9b..ca25e11 100644
+index 6e4b942..3912f57 100644
 --- a/config.def.h
 +++ b/config.def.h
 @@ -36,8 +36,13 @@ static const suffixmode_t TITLE_SUFFIXMODE = SUFFIX_BASENAME;
@@ -18,21 +18,31 @@ index 0db7a9b..ca25e11 100644
  };
  
  /* default slideshow delay (in sec, overwritten via -S option): */
-@@ -50,7 +55,7 @@ static const double GAMMA_MAX   = 10.0;
- static const int    GAMMA_RANGE = 32;
+@@ -60,25 +65,25 @@ static const bool ANTI_ALIAS = true;
+ /* if true, use a checkerboard background for alpha layer,
+  * toggled with 'A' key binding
+  */
+-static const bool ALPHA_LAYER = false;
++static const bool ALPHA_LAYER = true;
  
- /* command i_scroll pans image 1/PAN_FRACTION of screen width/height */
--static const int PAN_FRACTION = 5;
-+static const int PAN_FRACTION = 4;
+ /* percentage of memory to use for imlib2's cache size.
+  *   3 means use 3% of total memory which is about 245MiB on 8GiB machine.
+  *   0 or less means disable cache.
+  * 100 means use all available memory (but not above CACHE_SIZE_LIMIT).
+  */
+-static const int CACHE_SIZE_MEM_PERCENTAGE = 3;          /* use 3% of total memory for cache */
+-static const int CACHE_SIZE_LIMIT = 256 * 1024 * 1024;   /* but not above 256MiB */
+-static const int CACHE_SIZE_FALLBACK = 32 * 1024 * 1024; /* fallback to 32MiB if we can't determine total memory */
++static const int CACHE_SIZE_MEM_PERCENTAGE = 10;          /* use 10% of total memory for cache */
++static const int CACHE_SIZE_LIMIT = 1024 * 1024 * 1024;   /* but not above 1GiB */
++static const int CACHE_SIZE_FALLBACK = 512 * 1024 * 1024; /* fallback to 512MiB if we can't determine total memory */
  
- /* if false, pixelate images at zoom level != 100%,
-  * toggled with 'a' key binding
-@@ -72,10 +77,10 @@ static const int CACHE_SIZE = 4 * 1024 * 1024; /* 4MiB */
+ #endif
  #ifdef _THUMBS_CONFIG
  
  /* thumbnail sizes in pixels (width == height): */
 -static const int thumb_sizes[] = { 32, 64, 96, 128, 160 };
-+static const int thumb_sizes[] = { 64, 128, 256 };
++static const int thumb_sizes[] = { 64, 128, 192, 256, 320, 384 };
  
  /* thumbnail size at startup, index into thumb_sizes[]: */
 -static const int THUMB_SIZE = 3;
@@ -40,7 +50,7 @@ index 0db7a9b..ca25e11 100644
  
  #endif
  #ifdef _MAPPINGS_CONFIG
-@@ -93,7 +98,7 @@ static const keymap_t keys[] = {
+@@ -96,7 +101,7 @@ static const keymap_t keys[] = {
  	{ 0,            XK_Return,        g_switch_mode,        None },
  	{ 0,            XK_f,             g_toggle_fullscreen,  None },
  	{ 0,            XK_b,             g_toggle_bar,         None },
@@ -49,7 +59,7 @@ index 0db7a9b..ca25e11 100644
  	{ 0,            XK_g,             g_first,              None },
  	{ 0,            XK_G,             g_n_or_last,          None },
  	{ 0,            XK_r,             g_reload_image,       None },
-@@ -114,8 +119,6 @@ static const keymap_t keys[] = {
+@@ -117,8 +122,6 @@ static const keymap_t keys[] = {
  	{ 0,            XK_M,             g_mark_range,         None },
  	{ ControlMask,  XK_m,             g_reverse_marks,      None },
  	{ ControlMask,  XK_u,             g_unmark_all,         None },
@@ -58,7 +68,7 @@ index 0db7a9b..ca25e11 100644
  	{ 0,            XK_braceleft,     g_change_gamma,       -1 },
  	{ 0,            XK_braceright,    g_change_gamma,       +1 },
  	{ ControlMask,  XK_g,             g_change_gamma,        0 },
-@@ -130,12 +133,18 @@ static const keymap_t keys[] = {
+@@ -133,12 +136,18 @@ static const keymap_t keys[] = {
  	{ 0,            XK_Right,         t_move_sel,           DIR_RIGHT },
  	{ 0,            XK_R,             t_reload_all,         None },
  
@@ -81,7 +91,7 @@ index 0db7a9b..ca25e11 100644
  	{ 0,            XK_bracketright,  i_navigate,           +10 },
  	{ 0,            XK_bracketleft,   i_navigate,           -10 },
  	{ ControlMask,  XK_6,             i_alternate,          None },
-@@ -175,11 +184,12 @@ static const keymap_t keys[] = {
+@@ -178,11 +187,12 @@ static const keymap_t keys[] = {
  static const button_t buttons[] = {
  	/* modifiers    button            function              argument */
  	{ 0,            1,                i_cursor_navigate,    None },
